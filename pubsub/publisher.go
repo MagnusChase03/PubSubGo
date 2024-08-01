@@ -28,6 +28,10 @@ func (p *Publisher) Subscribe(s *Subscriber, topic string) {
         p.Topics[topic] = []*Subscriber{}
     }
 
+    if p.Subscribers[s.Id] == nil {
+        p.Subscribers[s.Id] = s
+    }
+
     s.AddTopic(topic)
     p.Topics[topic] = append(p.Topics[topic], s)
     fmt.Printf("Subscriber %d subscribed to %s via Publisher %d.\n", s.Id, topic, p.Id)
