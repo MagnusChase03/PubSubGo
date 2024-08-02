@@ -14,4 +14,6 @@ func main() {
 
     go s.Listen()
     time.Sleep(1 * time.Second)
+
+    p.Unsubscribe(s, "anime")
 }

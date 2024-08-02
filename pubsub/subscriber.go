@@ -30,6 +30,14 @@ func (s *Subscriber) AddTopic(topic string) {
     fmt.Printf("Subscriber %d is subscribed to %s.\n", s.Id, topic)
 }
 
+func (s *Subscriber) RemoveTopic(topic string) {
+    s.Mutex.Lock()
+    defer s.Mutex.Unlock()
+    s.Topics[topic] = false
+
+    fmt.Printf("Subscriber %d has unsubscribed to %s.\n", s.Id, topic)
+}
+
 func (s *Subscriber) Signal(message *Message) {
     s.Mutex.Lock()
     defer s.Mutex.Unlock()

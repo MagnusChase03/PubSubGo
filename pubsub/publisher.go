@@ -8,7 +8,7 @@ import (
 type Publisher struct {
     Id int
     Subscribers map[int]*Subscriber
-    Topics map[string][]*Subscriber 
+    Topics map[string]map[int]*Subscriber 
     Mutex sync.RWMutex
 }
 
@@ -16,7 +16,7 @@ func NewPublisher(id int) *Publisher {
     return &Publisher{
         Id: id,
         Subscribers: map[int]*Subscriber{},
-        Topics: map[string][]*Subscriber{},
+        Topics: map[string]map[int]*Subscriber{},
     } 
 }
 
@@ -25,7 +25,7 @@ func (p *Publisher) Subscribe(s *Subscriber, topic string) {
     defer p.Mutex.Unlock()
 
     if p.Topics[topic] == nil {
-        p.Topics[topic] = []*Subscriber{}
+        p.Topics[topic] = map[int]*Subscriber{}
     }
 
     if p.Subscribers[s.Id] == nil {
@@ -33,8 +33,17 @@ func (p *Publisher) Subscribe(s *Subscriber, topic string) {
     }
 
     s.AddTopic(topic)
-    p.Topics[topic] = append(p.Topics[topic], s)
+    p.Topics[topic][s.Id] = s
     fmt.Printf("Subscriber %d subscribed to %s via Publisher %d.\n", s.Id, topic, p.Id)
+}
+
+func (p *Publisher) Unsubscribe(s *Subscriber, topic string) {
+    p.Mutex.Lock()
+    defer p.Mutex.Unlock()
+
+    s.RemoveTopic(topic)
+    delete(p.Topics[topic], s.Id)
+    fmt.Printf("Subscriber %d unsubscribed from %s via Publisher %d.\n", s.Id, topic, p.Id)
 }
 
 func (p *Publisher) Publish(topic string, message string) {
