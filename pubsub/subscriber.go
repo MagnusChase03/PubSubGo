@@ -41,7 +41,10 @@ func (s *Subscriber) RemoveTopic(topic string) {
 func (s *Subscriber) Signal(message *Message) {
     s.Mutex.Lock()
     defer s.Mutex.Unlock()
-    s.Messages <- message
+
+    if s.Active {
+        s.Messages <- message
+    }
 }
 
 func (s *Subscriber) Listen() {
